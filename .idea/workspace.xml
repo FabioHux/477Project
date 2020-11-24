@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="1b37b52e-dd93-47df-938e-f0299390e269" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/NotesApp/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/NotesApp/.idea/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/NotesApp/.idea/compiler.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/NotesApp/.idea/gradle.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/NotesApp/.idea/jarRepositories.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/NotesApp/.idea/misc.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/NotesApp/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/NotesApp/app/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/NotesApp/app/build.gradle" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/NotesApp/app/proguard-rules.pro" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/NotesApp/app/src/androidTest/java/com/gmu/notesapp/ExampleInstrumentedTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/NotesApp/app/src/main/AndroidManifest.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/NotesApp/app/src/main/java/com/gmu/notesapp/MainActivity.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/NotesApp/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/NotesApp/app/src/main/res/drawable/ic_launcher_background.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/NotesApp/app/src/main/res/layout/activity_main.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/NotesApp/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/NotesApp/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/NotesApp/app/src/main/res/mipmap-hdpi/ic_launcher.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/NotesApp/app/src/main/res/mipmap-hdpi/ic_launcher_round.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/NotesApp/app/src/main/res/mipmap-mdpi/ic_launcher.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/NotesApp/app/src/main/res/mipmap-mdpi/ic_launcher_round.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/NotesApp/app/src/main/res/mipmap-xhdpi/ic_launcher.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/NotesApp/app/src/main/res/mipmap-xhdpi/ic_launcher_round.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/NotesApp/app/src/main/res/mipmap-xxhdpi/ic_launcher.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/NotesApp/app/src/main/res/mipmap-xxhdpi/ic_launcher_round.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/NotesApp/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/NotesApp/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/NotesApp/app/src/main/res/values-night/themes.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/NotesApp/app/src/main/res/values/colors.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/NotesApp/app/src/main/res/values/strings.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/NotesApp/app/src/main/res/values/themes.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/NotesApp/app/src/test/java/com/gmu/notesapp/ExampleUnitTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/NotesApp/build.gradle" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/NotesApp/gradle.properties" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/NotesApp/gradle/wrapper/gradle-wrapper.jar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/NotesApp/gradle/wrapper/gradle-wrapper.properties" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/NotesApp/gradlew" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/NotesApp/gradlew.bat" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/NotesApp/settings.gradle" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectId" id="1kinEWBrgD7oIfkvW9in3YDHww9" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/NotesApp" />
+    <property name="settings.editor.selected.configurable" value="AndroidSdkUpdater" />
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="1b37b52e-dd93-47df-938e-f0299390e269" name="Default Changelist" comment="" />
+      <created>1606192167340</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1606192167340</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="2339" y="938" width="424" height="491" key="FileChooserDialogImpl" timestamp="1606192454454">
+      <screen x="72" y="27" width="3768" height="2133" />
+    </state>
+    <state x="2339" y="938" width="424" height="491" key="FileChooserDialogImpl/72.27.3768.2133@72.27.3768.2133" timestamp="1606192454454" />
+  </component>
+</project>
