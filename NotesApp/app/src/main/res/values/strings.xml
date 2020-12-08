@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">NotesApp</string>
+    <string name="plus_sign">+</string>
+    <string name="home_page_title">Notes App</string>`
 </resources>
