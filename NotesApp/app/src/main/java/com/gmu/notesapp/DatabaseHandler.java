@@ -28,7 +28,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public final static String TAGTBNAME = "TagTable";
     public final static String TAGTB_TAG = "tag";
     private final static String CREATE_TAG_TABLE = "CREATE TABLE " + TAGTBNAME + " (" + ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-            " TEXT NOT NULL UNIQUE)";
+            TAGTB_TAG + " TEXT NOT NULL UNIQUE)";
 
 
     public final static String RELTBNAME = "NoteTagTable";
@@ -57,6 +57,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         //Create some stuff to test
         createNote(db, "Apple", "Fruit that's good and sturdy. Similar to a pear but tougher.", "Fruit Apple Healthy");
         createNote(db, "Pear", "Fruit that's sweet and soft. Similar to an apple but softer.", "Fruit Pear Healthy");
+        createNote(db, "Orange", "", "");
+        createNote(db, "Watermelon", "Watery stuff", "Fruit Watermelon");
+        createNote(db, "Mango", "Tastes weird but it's good!", "Fruit Mango");
+        createNote(db, "Papaya", "Literally think it's a modded Mango", "Fruit Papaya");
+        createNote(db, "Starfruit", "Fruit that looks like a crossection of a start got some height", "Fruit Star");
+        createNote(db, "Apple", "Fruit that's good and sturdy. Similar to a pear but tougher.", "Fruit Apple Healthy");
     }
 
     @Override
@@ -258,6 +264,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
         if(!success) return false; //Can't create note for some reason??
         note_cursor = getNote(db, 0, noteTitle);
+        note_cursor.moveToFirst();
         int note_id = note_cursor.getInt(note_cursor.getColumnIndex(ID));
 
         ArrayList<String> tagsList = new ArrayList<String>(Arrays.asList(tags.split(" ")));
@@ -338,7 +345,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             ret.append(queryBuildTagFilter(tags));
         }
 
-        Log.i("SEARCH_QUERY", ret.toString());
+        //Log.i("SEARCH_QUERY", ret.toString());
+        //System.out.println(ret.toString());
 
         return ret.toString();
     }
@@ -355,9 +363,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             }
 
             ret.append(type);
-            ret.append(" LIKE %");
-            ret.append(filter[i]);
-            ret.append("%");
+            ret.append(" LIKE '%");
+            ret.append(filter[i].replaceAll("/", "//").replaceAll("%", "/%").replaceAll("_","/_").replaceAll("'", "''"));
+            ret.append("%'  ESCAPE '/'");
             i++;
 
             for (; i < filter.length; i++) {
@@ -366,9 +374,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
                 ret.append(" AND ");
                 ret.append(type);
-                ret.append(" LIKE %");
-                ret.append(f);
-                ret.append("%");
+                ret.append(" LIKE '%");
+                ret.append(f.replaceAll("/", "//").replaceAll("%", "/%").replaceAll("_","/_").replaceAll("'", "''"));
+                ret.append("%' ESCAPE '/'");
 
             }
 
@@ -389,6 +397,17 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     private String queryBuildTagFilter(List<String> Tag){
         StringBuilder ret = new StringBuilder();
 
+        ret.append(queryBuildTagSubFilter(Tag.get(0)));
+
+        for(int i = 1; i < Tag.size(); i++){
+            ret.append(" AND ");
+            ret.append(queryBuildTagSubFilter(Tag.get(i)));
+        }
+        return ret.toString();
+    }
+
+    private String queryBuildTagSubFilter(String s){
+        StringBuilder ret = new StringBuilder();
         ret.append("EXISTS( SELECT ");
         ret.append(RELTB_NOTE);
         ret.append(", ");
@@ -409,23 +428,11 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         ret.append(ID);
         ret.append(" = r.");
         ret.append(RELTB_TAG);
-        ret.append(" AND (");
-
-        int i;
-        ret.append("t.");
+        ret.append(" AND t.");
         ret.append(TAGTB_TAG);
-        ret.append(" = ");
-        ret.append(Tag.get(0));
-
-        for(i = 1; i < Tag.size(); i++){
-            ret.append(" AND ");
-            ret.append("t.");
-            ret.append(TAGTB_TAG);
-            ret.append(" = ");
-            ret.append(Tag.get(i));
-        }
-
-        ret.append(")))");
+        ret.append(" = '");
+        ret.append(s);
+        ret.append("'))");
 
         return ret.toString();
     }
@@ -518,6 +525,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
         Cursor cursor = db.query(TAGTBNAME, new String[]{ID}, TAGTB_TAG + " = ?", new String[]{tagName}, null, null, null);
         if(cursor != null && cursor.getCount() > 0){
+            cursor.moveToFirst();
             int ret = cursor.getInt(cursor.getColumnIndex(ID)); //If there's already a tag of that name, don't create a new one
             cursor.close();
             return ret;
@@ -531,6 +539,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         values.put(TAGTB_TAG, tagName);
         if(db.insert(TAGTBNAME, null, values) != -1){
             cursor = db.query(TAGTBNAME, new String[]{ID}, TAGTB_TAG + " = ?", new String[]{tagName}, null, null, null);
+            cursor.moveToFirst();
             int ret =  cursor.getInt(cursor.getColumnIndex(ID));
             cursor.close();
             return ret;
