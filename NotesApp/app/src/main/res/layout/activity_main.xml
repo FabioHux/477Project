@@ -15,7 +15,7 @@
             android:layout_height="wrap_content"
             android:text="@string/home_page_title"
             android:textSize="24sp"
-            android:padding="5sp"
+            android:layout_marginStart="10sp"
             android:id="@+id/MainActivityTitle"
             android:layout_alignParentStart="true"
             android:layout_centerVertical="true"
@@ -29,27 +29,46 @@
             android:layout_centerVertical="true"
             android:layout_alignParentEnd="true"
             android:layout_marginEnd="10sp"
+            android:onClick="makeNewNote"
             android:text="@string/plus_sign"
             android:paddingTop="3sp"/>
-            <!--android:onClick="makeNewNote"!-->
 
     </RelativeLayout>
     
     <androidx.appcompat.widget.SearchView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:id="@+id/search_view"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/TagView"/>
-
-    <Spinner
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/TagSpinner"/>
+        android:orientation="horizontal">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_alignParentStart="true"
+            android:textSize="15sp"
+            android:id="@+id/tag_select_tv"
+            android:text="Select a Tag:"/>
+        <Spinner
+            android:layout_marginTop="15sp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5sp"
+            android:layout_toEndOf="@id/tag_select_tv"
+            android:layout_centerVertical="true"
+            android:background="@color/orange"
+            android:id="@+id/TagSpinner"/>
+    </RelativeLayout>
 
     <androidx.recyclerview.widget.RecyclerView
+        android:layout_marginTop="15sp"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/NotesListView"/>

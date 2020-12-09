@@ -11,4 +11,6 @@
     <color name="colorPrimaryDark">#3700B3</color>
     <color name="colorAccent">#03DAC5</color>
     <color name="light_blue">#84A6D4</color>
+    <color name="orange">#f3b762</color>
+    <color name="yellow">#f6e884</color>
 </resources>
