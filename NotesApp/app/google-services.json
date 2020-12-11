@@ -1,0 +1,39 @@
+{
+    "project_info": {
+      "project_number": "970988801021",
+      "project_id": "notesapp-fda51",
+      "storage_bucket": "notesapp-fda51.appspot.com"
+    },
+    "client": [
+      {
+        "client_info": {
+          "mobilesdk_app_id": "1:970988801021:android:f2ebefe7c483e51b146794",
+          "android_client_info": {
+            "package_name": "com.gmu.notesapp"
+          }
+        },
+        "oauth_client": [
+          {
+            "client_id": "970988801021-tpp39fp19sc1i8tc6bmlkopus5rupej5.apps.googleusercontent.com",
+            "client_type": 3
+          }
+        ],
+        "api_key": [
+          {
+            "current_key": "AIzaSyBZGUzOI_313KJxkByJ7Dz0nX8ArXIrh94"
+          }
+        ],
+        "services": {
+          "appinvite_service": {
+            "other_platform_oauth_client": [
+              {
+                "client_id": "970988801021-tpp39fp19sc1i8tc6bmlkopus5rupej5.apps.googleusercontent.com",
+                "client_type": 3
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "configuration_version": "1"
+  }
