@@ -32,12 +32,24 @@ public class TagsListAdapter extends RecyclerView.Adapter<TagsListViewHolder> {
     @Override
     public TagsListViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         Button view = (Button) LayoutInflater.from(parent.getContext()).inflate(R.layout.tag_button, parent, false);
-        view.setOnLongClickListener(v -> {
-            removeItem(((Button)v).getText().toString());
-            if(TAG_LIST_ACTION_TYPE != null)
-                handler.sendEmptyMessage(TAG_LIST_ACTION_TYPE.intValue());
-            return false;
-        });
+
+        if(TAG_LIST_ACTION_TYPE.intValue() == MainActivity.TAG_LIST_MODIFIED)
+            view.setOnLongClickListener(v -> {
+                removeItem(((Button)v).getText().toString());
+                if(TAG_LIST_ACTION_TYPE != null)
+                    handler.sendEmptyMessage(TAG_LIST_ACTION_TYPE.intValue());
+                return false;
+            });
+        else if(TAG_LIST_ACTION_TYPE.intValue() == NoteDisplayActivity.TAG_SELECTED)
+            view.setOnClickListener(v -> {
+                if(TAG_LIST_ACTION_TYPE != null)
+                    handler.sendMessage(
+                            handler.obtainMessage(
+                                TAG_LIST_ACTION_TYPE.intValue(),
+                                ((Button)v).getText().toString()
+                            )
+                    );
+            });
         return new TagsListViewHolder(view);
     }
 
@@ -57,7 +69,7 @@ public class TagsListAdapter extends RecyclerView.Adapter<TagsListViewHolder> {
         notifyDataSetChanged();
     }
 
-    public void removeItem(String tag){
+    private void removeItem(String tag){
         tags.remove(tag);
         notifyDataSetChanged();
     }
