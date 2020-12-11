@@ -117,7 +117,9 @@ public class MainActivity extends AppCompatActivity {
         selectedTags.setLayoutManager(tagsLayoutManager);
         selectedTags.setHasFixedSize(true);
         selectedTags.setItemViewCacheSize(0);
+
         tagsAdapter = new TagsListAdapter(new ArrayList<String>(), handler, TAG_LIST_MODIFIED);
+
         selectedTags.setAdapter(tagsAdapter);
 
         fullTags = (Spinner) findViewById(R.id.TagSpinner);
@@ -136,7 +138,9 @@ public class MainActivity extends AppCompatActivity {
             public void onNothingSelected(AdapterView<?> adapterView){
                 if(auto_select_buffer != null && !auto_select_buffer.isEmpty()){
                     tagsAdapter.addItem(auto_select_buffer);
+
                     (new Thread(new LoadNotes(getApplicationContext(), handler, gquery, tagsAdapter.tags))).start();
+
                     auto_select_buffer = "";
                 }
             }
@@ -153,14 +157,18 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 gquery = query;
+
                 (new Thread(new LoadNotes(MainActivity.this.getApplicationContext(), handler, query, tagsAdapter.tags))).start();
+
                 return false;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
                 gquery = newText;
+
                 (new Thread(new LoadNotes(MainActivity.this.getApplicationContext(), handler, newText, tagsAdapter.tags))).start();
+
                 return false;
             }
         });
