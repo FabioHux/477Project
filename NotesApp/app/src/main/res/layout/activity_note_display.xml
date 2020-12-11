@@ -38,9 +38,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/TagView"/>
-    <androidx.recyclerview.widget.RecyclerView
-        android:layout_marginTop="15sp"
+    <TextView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/NotesListView"/>
+        android:textSize = "24sp"
+        android:scrollbars="vertical"
+        android:id="@+id/notes_tv"/>
 </LinearLayout>

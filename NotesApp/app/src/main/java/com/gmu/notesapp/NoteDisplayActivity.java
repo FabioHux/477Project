@@ -16,21 +16,26 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.provider.ContactsContract;
+import android.util.Log;
+import android.util.TypedValue;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class NoteDisplayActivity extends AppCompatActivity {
 
     private String title = null, notes;
-    private List<String> tags;
+    private List<String> tags, allTags;
     private SQLiteDatabase db;
     private DatabaseHandler dbHandler;
-    private TextView title_tv;
-    private RecyclerView tagsList, notesList;
-    private RecyclerView.LayoutManager notesLayoutManager, tagsLayoutManager;
+    private TextView title_tv, notes_tv;
+    private RecyclerView tagsList;
+    private RecyclerView.LayoutManager tagsLayoutManager;
     private TagsListAdapter tagsListAdapter;
     private int id = 0;
     private String returnSearch = null;
@@ -44,6 +49,7 @@ public class NoteDisplayActivity extends AppCompatActivity {
     private static final int ALL_TAGS_LOADED = 2;
     private static final int NOTE_LOADED = 3;
     private static final int TAGS_LOADED = 4;
+    private static final int LAYER_LOADED = 5;
 
     public Handler handler = new Handler(Looper.getMainLooper()){
         @Override
@@ -52,7 +58,7 @@ public class NoteDisplayActivity extends AppCompatActivity {
             Cursor cursor;
             switch(what){
                 case ALL_TAGS_LOADED:
-                    List<String> allTags = new ArrayList<>();
+                    allTags = new ArrayList<>();
                     cursor = (Cursor) msg.obj;
                     cursor.moveToFirst();
                     while(!cursor.isAfterLast()){
@@ -73,6 +79,12 @@ public class NoteDisplayActivity extends AppCompatActivity {
                     cursor.moveToFirst();
                     if(!cursor.isAfterLast()){
                         notes = cursor.getString(cursor.getColumnIndex(DatabaseHandler.NOTETB_NOTE));
+                        if(notes != null && !notes.isEmpty()){
+                            notes_tv.setText(notes);
+                        }
+                        //(new Thread(new CreateStructure(handler, getApplicationContext(), notesList.getMeasuredWidth()))).start();
+                        //notesListAdapter = new NoteDisplayAdapter(getApplicationContext(), words, notesList.getMeasuredWidth());
+                        //notesList.setAdapter(notesListAdapter);
                         id = cursor.getInt(cursor.getColumnIndex(DatabaseHandler.ID));
                         title = cursor.getString(cursor.getColumnIndex(DatabaseHandler.NOTETB_TITLE));
                         title_tv.setText(title);
@@ -90,6 +102,21 @@ public class NoteDisplayActivity extends AppCompatActivity {
                         tagsListAdapter = new TagsListAdapter(new ArrayList<String>(), handler, TAG_SELECTED);
                     tagsList.setAdapter(tagsListAdapter);
                     db.close();
+                    break;
+                /*case LAYER_LOADED:
+                    ArrayList<TextView> layer = (ArrayList<TextView>)msg.obj;
+                    //Log.i("LAYER_LOADING", "CHECKPOINT");
+                    if(!layer.isEmpty()) {
+                        noteListStructure.add(layer);
+                    }
+
+                    if(words.isEmpty()) {
+                        Log.i("LAYER_LOADING", ("size = " + noteListStructure.size()));
+                        notesListAdapter = new NoteDisplayAdapter(getApplicationContext(), noteListStructure);
+                        notesList.setAdapter(notesListAdapter);
+                    }else{
+                        (new Thread(new CreateStructure(handler, getApplicationContext(), notesList.getMeasuredWidth()))).start();
+                    }*/
             }
         }
     };
@@ -113,15 +140,21 @@ public class NoteDisplayActivity extends AppCompatActivity {
         tagsList.setLayoutManager(tagsLayoutManager);
         tagsList.setHasFixedSize(true);
 
+        notes_tv = (TextView) findViewById(R.id.notes_tv);
+
+        /*notesLayoutManager = new LinearLayoutManager(this);
+        notesList = (RecyclerView) findViewById(R.id.NotesListView);
+        notesList.setLayoutManager(notesLayoutManager);
+        notesList.setHasFixedSize(true);*/
+
     }
 
     public void editNote(View view){
-        /*
+
         Intent intent = new Intent(this, ModifyNotesActivity.class);
         intent.putExtra(ModifyNotesActivity.TITLE_SLOT, title);
         intent.putExtra(ModifyNotesActivity.FLAG_SLOT, 1);
         startActivity(intent);
-         */
     }
 
     private void callNote(String tag){
@@ -262,4 +295,100 @@ public class NoteDisplayActivity extends AppCompatActivity {
             }
         }
     }
+
+    /*private class CreateStructure implements Runnable{
+        Handler handler;
+        Context context;
+        int lim;
+
+        public CreateStructure(Handler handler, Context context, int lim){
+            this.handler = handler;
+            this.context = context;
+            this.lim = lim;
+        }
+
+        @Override
+        public void run() {
+            ArrayList<TextView> layer = new ArrayList<>();
+            //Log.i("LAYER_LOADING", ("lim = " + lim));
+
+            int len = 0, i = 0;
+            String s = words.get(0);
+
+            TextView t = new TextView(context);
+            t.setTextSize(TypedValue.COMPLEX_UNIT_SP, 24f);
+            t.setText(s);
+            t.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+            t.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+
+            //Log.i("LAYER_LOADING", ("t = " + t.getMeasuredWidth()));
+            int n = t.getMeasuredWidth();
+
+            while(n >= lim){
+                layer.add(t);
+                words.remove(0);
+                handler.sendMessage(
+                        handler.obtainMessage(
+                                LAYER_LOADED,
+                                layer
+                        )
+                );
+                return;
+            }
+
+            int indOf = s.indexOf('\n');
+
+            while(len + n < lim && indOf == -1){
+                if(len != 0){
+                    int x = layer.size() - 1;
+                    TextView prev = layer.get(x);
+                    prev.setText((prev.getText().toString() + " "));
+                    t.setText(s);
+                }
+                len += n;
+                layer.add(t);
+                words.remove(0);
+                if(words.isEmpty()) break;
+                s = words.get(0);
+
+                t = new TextView(context);
+                t.setTextSize(TypedValue.COMPLEX_UNIT_SP, 24f);
+                t.setText((s + " "));
+                t.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+                t.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+                //Log.i("LAYER_LOADING", ("t = " + t.getMeasuredWidth()));
+                n = t.getMeasuredWidth();
+                indOf = s.indexOf('\n');
+            }
+
+            if(len + n < lim && !words.isEmpty() && indOf != -1){
+                if(indOf == 0){
+                    words.remove(0);
+                    if(s.length() > 1)
+                        words.add(0, s.substring(1));
+                }else{
+                    words.remove(0);
+                    String left = s.substring(0, indOf);
+                    if(indOf != s.length() - 1) {
+                        String right = s.substring(indOf + 1);
+                        words.add(0, right);
+                    }
+                    if(len != 0){
+                        int x = layer.size() - 1;
+                        TextView prev = layer.get(x);
+                        prev.setText((prev.getText().toString() + " "));
+                        t.setText(left);
+                    }
+                    layer.add(t);
+                }
+            }
+
+            handler.sendMessage(
+                    handler.obtainMessage(
+                            LAYER_LOADED,
+                            layer
+                    )
+            );
+        }
+    }*/
 }

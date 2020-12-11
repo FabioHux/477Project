@@ -19,7 +19,6 @@
             android:textSize="24sp"
             android:layout_marginStart="20sp"
 
-            android:background="@drawable/borderline"
             android:textAlignment="center"
             android:id="@+id/take_photo"
             android:onClick="open"
@@ -32,7 +31,6 @@
             android:textAlignment="center"
 
             android:layout_marginStart="10sp"
-            android:background="@drawable/borderline"
             android:id="@+id/detect"
             android:onClick="detect"
             />
@@ -41,7 +39,6 @@
             android:layout_height="wrap_content"
             android:text="Done"
             android:textSize="24sp"
-            android:background="@drawable/borderline"
             android:layout_marginStart="10sp"
             android:layout_marginEnd="10sp"
             android:id="@+id/done"
@@ -49,25 +46,15 @@
             />
 
     </LinearLayout>
-    <ScrollView
+    <androidx.recyclerview.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="300sp"
-        android:fillViewport="true"
-
+        android:background="@drawable/borderline"
+        android:id="@+id/resultStrings"
+        android:layout_marginTop="10sp"
         >
-        <TableLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:stretchColumns="1">
-                <androidx.recyclerview.widget.RecyclerView
-                android:layout_marginTop="15sp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/resultStrings"
-                android:background="@drawable/borderline"
-                />
-        </TableLayout>
-    </ScrollView>
+
+    </androidx.recyclerview.widget.RecyclerView>
 
     <ImageView
         android:visibility="gone"

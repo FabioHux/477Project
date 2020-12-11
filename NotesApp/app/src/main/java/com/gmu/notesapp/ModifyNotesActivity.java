@@ -15,11 +15,13 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.SimpleCursorAdapter;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -45,6 +47,7 @@ public class ModifyNotesActivity extends AppCompatActivity {
     private final static int DB_LOADED = 2;
     public final static int TAGS_LOADED = 3;
     public final static int DB_UPDATED = 4;
+    private String auto_select_buffer = null;
 
     public static final String TITLE_SLOT = "com.gmu.notesapp.title",
             FLAG_SLOT = "com.gmu.notesapp.flag",
@@ -56,7 +59,7 @@ public class ModifyNotesActivity extends AppCompatActivity {
         public void handleMessage(@NonNull Message msg) {
             int what = msg.what;
             Cursor cursor = null;
-            if(what == SPINNER_CURSOR_LOADED && what ==NOTES_LOADED)
+            if(what == SPINNER_CURSOR_LOADED || what ==NOTES_LOADED)
                 cursor = (Cursor) msg.obj;
             switch(what){
                 case SPINNER_CURSOR_LOADED:
@@ -73,9 +76,13 @@ public class ModifyNotesActivity extends AppCompatActivity {
                         spinnerAdapter.swapCursor(cursor);
                     }
                     spinnerCursor = cursor;
+                    if(cursor.getCount() > 0){
+                        auto_select_buffer = null;
+                    }
                     fullTags.setAdapter(spinnerAdapter); //Set up the cursor for the spinner
                     break;
                 case NOTES_LOADED:  //Set up the values for the note that was loaded
+                    cursor.moveToFirst();
                     id = cursor.getInt(cursor.getColumnIndex(DatabaseHandler.ID));
                     notes.setText(cursor.getString(cursor.getColumnIndex(DatabaseHandler.NOTETB_NOTE)));
                     (new Thread(new LoadTags(getApplicationContext(), handler,title.getText().toString()))).start();
@@ -93,7 +100,9 @@ public class ModifyNotesActivity extends AppCompatActivity {
                         Toast.makeText(getApplicationContext(),"Title already exists...",Toast.LENGTH_SHORT);
                         //Post a Toast or something cause something dun fucked up :D
                     }
+                    break;
                 case DB_LOADED:     //Only calls LoadNote if there is a load to note (ie. flag == 1)
+                    (new Thread(new LoadAllTags(getApplicationContext(), handler))).start();
                     if(flag == 1)
                         (new Thread(new LoadNote(getApplicationContext(), handler,title.getText().toString()))).start();
             }
@@ -111,6 +120,21 @@ public class ModifyNotesActivity extends AppCompatActivity {
         tags=(EditText) findViewById(R.id.tags);
         notes=(EditText) findViewById(R.id.notes);
         fullTags=(Spinner)findViewById(R.id.TagSpinner);
+
+        fullTags.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if(auto_select_buffer != null)
+                    tags.setText((tags.getText().toString() + " " + ((TextView) view).getText().toString()));
+                else
+                    auto_select_buffer = ((TextView) view).getText().toString();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
 
         if(flag==1){
             title.setText(intent.getStringExtra(TITLE_SLOT));
@@ -137,11 +161,11 @@ public class ModifyNotesActivity extends AppCompatActivity {
             //Yell at them for having an empty title with a Toast or something
             return;
         }
-
+        System.out.println(title.getText().toString() + flag);
         if(flag == 1){
-            new Thread(new UpdateNote(getApplicationContext(), handler, title.getText().toString(), notes.getText().toString(), tags.getText().toString(), oldTags));
+            (new Thread(new UpdateNote(getApplicationContext(), handler, title.getText().toString(), notes.getText().toString(), tags.getText().toString(), oldTags))).start();
         }else{
-            new Thread(new CreateNote(getApplicationContext(), handler, title.getText().toString(), notes.getText().toString(), tags.getText().toString()));
+            (new Thread(new CreateNote(getApplicationContext(), handler, title.getText().toString(), notes.getText().toString(), tags.getText().toString()))).start();
         }
     }
 
@@ -210,8 +234,8 @@ public class ModifyNotesActivity extends AppCompatActivity {
 
         if(spinnerAdapter != null){
             fullTags.setAdapter(null);
-            spinnerCursor.close();
             spinnerAdapter = null;
+            spinnerCursor.close();
         }
 
         if(db != null && db.isOpen()){
@@ -283,8 +307,31 @@ public class ModifyNotesActivity extends AppCompatActivity {
             if(dbHandler != null) {
                 handler.sendMessage(
                         handler.obtainMessage(
-                                ModifyNotesActivity.SPINNER_CURSOR_LOADED,
+                                ModifyNotesActivity.TAGS_LOADED,
                                 dbHandler.getStringOfTagsByNote(db, this.title)
+                        )
+                );
+            }
+        }
+    }
+
+    private class LoadAllTags implements Runnable{
+
+        Handler handler;
+        Context context;
+
+        public LoadAllTags(Context context, Handler handler){
+            this.handler = handler;
+            this.context = context;
+        }
+
+        @Override
+        public void run() {
+            if(dbHandler != null) {
+                handler.sendMessage(
+                        handler.obtainMessage(
+                                ModifyNotesActivity.SPINNER_CURSOR_LOADED,
+                                dbHandler.getAllTags(db)
                         )
                 );
             }
@@ -335,6 +382,7 @@ public class ModifyNotesActivity extends AppCompatActivity {
 
         @Override
         public void run() {
+            System.out.println("hello");
             if(dbHandler != null) {
                 handler.sendMessage(
                         handler.obtainMessage(

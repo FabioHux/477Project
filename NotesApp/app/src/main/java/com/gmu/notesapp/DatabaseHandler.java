@@ -57,7 +57,11 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         //Create some stuff to test
         createNote(db, "Apple", "Fruit that's good and sturdy. Similar to a pear but tougher.", "Fruit Apple Healthy");
         createNote(db, "Pear", "Fruit that's sweet and soft. Similar to an apple but softer.", "Fruit Pear Healthy");
-        createNote(db, "Orange", "", "");
+        createNote(db, "Orange", "So, to know the height of a view element, before it has been measured and laid out by the system, we will need to invoke the view.measure() function manually.\n" +
+                "\n" +
+                "The measure function expects 2 parameters which derived from the view LayoutParams + the parent constraints.\n" +
+                "\n" +
+                "In the above code sample, we are measuring the view forcing its width to be EXACTLY the width of the parent (the RecycleView), and the height is not limited.", "");
         createNote(db, "Watermelon", "Watery stuff", "Fruit Watermelon");
         createNote(db, "Mango", "Tastes weird but it's good!", "Fruit Mango");
         createNote(db, "Papaya", "Literally think it's a modded Mango", "Fruit Papaya");

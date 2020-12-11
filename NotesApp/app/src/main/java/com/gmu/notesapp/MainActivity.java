@@ -179,11 +179,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void makeNewNote(View view){
-        /*
         Intent intent = new Intent(this, ModifyNotesActivity.class);
         intent.putExtra(ModifyNotesActivity.FLAG_SLOT, 0);
         startActivity(intent);
-         */
     }
 
     private class LoadDB implements Runnable{

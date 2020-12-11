@@ -100,7 +100,9 @@ public class ImageTextActivity extends AppCompatActivity {
         if(resultCode!=0) {
             super.onActivityResult(requestCode, resultCode, data);
             bitmap = (Bitmap) data.getExtras().get("data");
+            ImageView ans = (ImageView) findViewById(R.id.image);
             ((ImageView)findViewById(R.id.image)).setImageBitmap(bitmap);
+            ((ImageView)findViewById(R.id.image)).setVisibility(View.VISIBLE);
             findViewById(R.id.take_photo_request).setVisibility(View.GONE);
         }
     }
@@ -179,7 +181,7 @@ public class ImageTextActivity extends AppCompatActivity {
             StringBuilder str=new StringBuilder();
             for(int i=0;i<mAdapter.getCount();i++) {
                 if(booleans.get(i)){
-                str.append("\n");str.append(mData.get(i));}
+                    str.append("\n");str.append(mData.get(i));}
             }
             return str.toString();
         }
@@ -193,7 +195,7 @@ public class ImageTextActivity extends AppCompatActivity {
 
         @Override
         public int getItemCount() {
-            return 0;
+            return mData.size();
         }
 
         public void clear() {
