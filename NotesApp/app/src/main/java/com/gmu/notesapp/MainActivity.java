@@ -39,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView.LayoutManager notesLayoutManager, tagsLayoutManager;
     private String gquery = "";
     static final String MAIN_TAG_SAVE = "main_tag_save", MAIN_SEARCH_SAVE = "main_search_save";
+    private String auto_select_buffer = null;
 
     private final static int SPINNER_CURSOR_LOADED = 0;
     private final static int NOTES_CURSOR_LOADED = 1;
@@ -68,10 +69,8 @@ public class MainActivity extends AppCompatActivity {
                         spinnerAdapter.swapCursor(cursor);
                     }
                     spinnerCursor = cursor;
-                    Log.i("CURSOR_CHECKER", Integer.toString(cursor.getCount()));
-                    if(cursor.getCount() > 0){
-                        tagsAdapter.resetRemoval();
-                    }
+                    //Log.i("CURSOR_CHECKER", Integer.toString(cursor.getCount()));
+                    tagsAdapter.cleanTags(cursor);
                     fullTags.setAdapter(spinnerAdapter);
                     break;
                 case NOTES_CURSOR_LOADED:
@@ -110,20 +109,28 @@ public class MainActivity extends AppCompatActivity {
         selectedTags.setLayoutManager(tagsLayoutManager);
         selectedTags.setHasFixedSize(true);
         selectedTags.setItemViewCacheSize(0);
-        tagsAdapter = new TagsListAdapter(new ArrayList<String>(), handler);
+        tagsAdapter = new TagsListAdapter(new ArrayList<String>(), handler, TAG_LIST_MODIFIED);
         selectedTags.setAdapter(tagsAdapter);
 
         fullTags = (Spinner) findViewById(R.id.TagSpinner);
         fullTags.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                tagsAdapter.addItem(((TextView)view).getText().toString());
-                (new Thread(new LoadNotes(getApplicationContext(), handler, gquery, tagsAdapter.tags))).start();
+                if(auto_select_buffer != null) {
+                    tagsAdapter.addItem(((TextView) view).getText().toString());
+                    (new Thread(new LoadNotes(getApplicationContext(), handler, gquery, tagsAdapter.tags))).start();
+                }else{
+                    auto_select_buffer = ((TextView) view).getText().toString();
+                }
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> adapterView){
-
+                if(auto_select_buffer != null && !auto_select_buffer.isEmpty()){
+                    tagsAdapter.addItem(auto_select_buffer);
+                    (new Thread(new LoadNotes(getApplicationContext(), handler, gquery, tagsAdapter.tags))).start();
+                    auto_select_buffer = "";
+                }
             }
         });
 
@@ -286,7 +293,7 @@ public class MainActivity extends AppCompatActivity {
         super.onRestoreInstanceState(savedInstanceState);
 
         gquery = savedInstanceState.getString(MAIN_SEARCH_SAVE);
-        tagsAdapter = new TagsListAdapter(savedInstanceState.getStringArrayList(MAIN_TAG_SAVE), handler);
+        tagsAdapter = new TagsListAdapter(savedInstanceState.getStringArrayList(MAIN_TAG_SAVE), handler, TAG_LIST_MODIFIED);
     }
 
     private void cleanUp(){
