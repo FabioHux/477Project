@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:orientation="vertical"
     tools:context=".ModifyNotesActivity"
+    android:padding="10sp"
     >
     <RelativeLayout
         android:layout_width="match_parent"
@@ -12,9 +13,6 @@
         android:orientation="horizontal"
         android:background="@drawable/borderline"
 
-        android:layout_marginTop="10sp"
-        android:layout_marginStart="10sp"
-        android:layout_marginEnd="10sp"
         >
         <TextView
             android:layout_width="wrap_content"
@@ -42,8 +40,6 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:layout_marginTop="10sp"
-
-        android:layout_marginEnd="10sp"
         >
 
         <TextView
@@ -57,7 +53,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="20sp"
             android:background="@drawable/borderline"
-            android:textSize="30sp"
+            android:textSize="12sp"
             android:id="@+id/title"
             >
         </EditText>
@@ -68,7 +64,6 @@
     android:orientation="horizontal"
     android:layout_marginTop="10sp"
 
-    android:layout_marginEnd="10sp"
     >
 
         <TextView
@@ -77,15 +72,14 @@
             android:textSize="30sp"
             android:text="@string/underlined_tags"
             android:layout_marginStart="20sp" />
-    <EditText
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="15sp"
-        android:background="@drawable/borderline"
-        android:textSize="30sp"
-        android:id="@+id/tags"
-        >
-    </EditText>
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="15sp"
+            android:background="@drawable/borderline"
+            android:textSize="12sp"
+            android:id="@+id/tags" />
 </LinearLayout>
 
     <Spinner
@@ -104,7 +98,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignBottom="@+id/camera"
-            android:layout_marginStart="20sp"
+            android:layout_marginStart="10sp"
             android:layout_marginBottom="0dp"
             android:text="@string/underlined_Notes"
             android:textSize="30sp" />
@@ -123,15 +117,20 @@
             />
     </RelativeLayout>
 
-    <EditText
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@drawable/borderline"
-        android:layout_marginBottom="10sp"
+        android:id="@+id/notesLayout"
+        >
 
-        android:id="@+id/notes"
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
 
-        android:layout_marginStart="10sp"
-        android:layout_marginEnd="10sp"
-        />
+            android:clickable="false"
+            android:linksClickable="true"
+            android:id="@+id/notes"
+            />
+    </LinearLayout>
 </LinearLayout>

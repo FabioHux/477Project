@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:orientation="vertical"
     tools:context=".ImageTextActivity"
+    android:padding="10sp"
     >
     <LinearLayout
         android:layout_width="match_parent"
@@ -30,7 +31,7 @@
             android:textSize="24sp"
             android:textAlignment="center"
 
-            android:layout_marginStart="20sp"
+            android:layout_marginStart="10sp"
             android:background="@drawable/borderline"
             android:id="@+id/detect"
             android:onClick="detect"
@@ -42,7 +43,7 @@
             android:textSize="24sp"
             android:background="@drawable/borderline"
             android:layout_marginStart="10sp"
-            android:layout_marginEnd="20sp"
+            android:layout_marginEnd="10sp"
             android:id="@+id/done"
             android:onClick="open"
             />
@@ -76,13 +77,15 @@
         android:id="@+id/image" />
 
     <TextView
-        android:layout_marginTop="20sp"
+        android:id="@+id/take_photo_request"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="This Is Where The Photo Is Stored"
-        android:textSize="50sp"
-        android:textAlignment="center"
-        android:id="@+id/take_photo_request"
+        android:layout_marginTop="20sp"
+        android:background="@drawable/dashed"
         android:onClick="open"
-        android:background="@drawable/dashed" />
+        android:text="This Is Where The Photo Is Stored"
+        android:textAlignment="center"
+        android:textSize="50sp"
+
+        />
 </LinearLayout>

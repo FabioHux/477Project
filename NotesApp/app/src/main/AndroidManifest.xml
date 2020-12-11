@@ -16,6 +16,7 @@
             android:name="com.google.mlkit.vision.DEPENDENCIES"
             android:value="ocr" />
         <activity android:name=".ImageTextActivity"></activity>
+        <activity android:name=".ModifyNotesActivity"></activity>
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
