@@ -1,11 +1,13 @@
 package com.gmu.notesapp;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -46,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
     private final static int DB_LOADED = 2;
     public final static int NOTE_SELECTED = 3;
     public final static int TAG_LIST_MODIFIED = 4;
+    public final static int NOTE_DISPLAY_REQ = 5;
 
     private Handler handler = new Handler(Looper.getMainLooper()){
         @Override
@@ -70,6 +73,9 @@ public class MainActivity extends AppCompatActivity {
                     }
                     spinnerCursor = cursor;
                     //Log.i("CURSOR_CHECKER", Integer.toString(cursor.getCount()));
+                    if(cursor.getCount() > 0){
+                        auto_select_buffer = null;
+                    }
                     tagsAdapter.cleanTags(cursor);
                     fullTags.setAdapter(spinnerAdapter);
                     break;
@@ -90,7 +96,9 @@ public class MainActivity extends AppCompatActivity {
                 case NOTE_SELECTED:
                     String title = (String) msg.obj;
                     System.out.println(title);
-                    //Start next activity. For Fabio to make!
+                    Intent intent = new Intent(MainActivity.this, NoteDisplayActivity.class);
+                    intent.putExtra(NoteDisplayActivity.NOTE_DISPLAY_TITLE_SLOT, title);
+                    startActivityForResult(intent, NOTE_DISPLAY_REQ);
 
             }
         }
@@ -120,12 +128,10 @@ public class MainActivity extends AppCompatActivity {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 if(auto_select_buffer != null) {
                     tagsAdapter.addItem(((TextView) view).getText().toString());
-
-                    (new Thread(new LoadNotes(getApplicationContext(), handler, gquery, tagsAdapter.tags))).start();
-
                 }else{
                     auto_select_buffer = ((TextView) view).getText().toString();
                 }
+                (new Thread(new LoadNotes(getApplicationContext(), handler, gquery, tagsAdapter.tags))).start();
             }
 
             @Override
@@ -173,7 +179,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void makeNewNote(View view){
-        startActivityForResult(new Intent(this, ModifyNotesActivity.class),0);
+        /*
+        Intent intent = new Intent(this, ModifyNotesActivity.class);
+        intent.putExtra(ModifyNotesActivity.FLAG_SLOT, 0);
+        startActivity(intent);
+         */
     }
 
     private class LoadDB implements Runnable{
@@ -304,6 +314,20 @@ public class MainActivity extends AppCompatActivity {
 
         gquery = savedInstanceState.getString(MAIN_SEARCH_SAVE);
         tagsAdapter = new TagsListAdapter(savedInstanceState.getStringArrayList(MAIN_TAG_SAVE), handler, TAG_LIST_MODIFIED);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if(requestCode == NOTE_DISPLAY_REQ && resultCode == Activity.RESULT_OK){
+            gquery = "";
+            tagsAdapter.tags = new ArrayList<>();
+            if(data != null){
+                tagsAdapter.addItem(data.getStringExtra(NoteDisplayActivity.NOTE_DISPLAY_TITLE_SLOT));
+            }
+            (new Thread(new LoadNotes(getApplicationContext(), handler, gquery, tagsAdapter.tags))).start();
+        }
     }
 
     private void cleanUp(){
