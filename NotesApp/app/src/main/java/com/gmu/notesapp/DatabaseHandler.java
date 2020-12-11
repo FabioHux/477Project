@@ -136,7 +136,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
      */
     private boolean existsRelation(SQLiteDatabase db, int note_id, int tag_id, int flag){
         Cursor cursor = getRelation(db, note_id, tag_id, flag);
-        return (cursor != null && cursor.getCount() > 0);
+        boolean ret = false;
+        if(cursor != null){
+            ret = cursor.getCount() > 0;
+            cursor.close();
+        }
+        return ret;
     }
 
     /**
@@ -160,7 +165,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
         Cursor noteCursor = getNote(db, note_id, null);
 
-        if(noteCursor == null || noteCursor.getCount() == 0) return false; //If note does not exist, return false. We can't update.
+        if(noteCursor != null && noteCursor.getCount() == 0){
+            noteCursor.close();
+            noteCursor = null;
+        }; //If note does not exist, return false. We can't update.
+
+        if(noteCursor == null) return false;
 
         ArrayList<String> newTagsList = new ArrayList<String>(Arrays.asList(NewTags.split(" ")));
         ArrayList<String> oldTagsList = new ArrayList<String>(Arrays.asList(OldTags.split(" ")));
@@ -217,7 +227,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
         Cursor note = getNote(db, 0, noteTitle);
 
-        if(note == null || note.getCount() != 1) return;
+        if(note != null && note.getCount() != 1){
+            note.close();
+            note = null;
+        }
+
+        if(note == null) return;
 
         note.moveToFirst();
         int note_id = note.getInt(note.getColumnIndex(ID));
@@ -232,6 +247,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             deleteRelation(db, note_id, rel.getInt(rel.getColumnIndex(RELTB_TAG)));
             rel.moveToNext();
         }
+
+        rel.close();
 
         db.delete(NOTETBNAME, ID + " = ?", new String[]{Integer.toString(note_id)});
     }
@@ -255,7 +272,10 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         if(invalidDB(db) || noteTitle == null || noteTitle.isEmpty() || notes == null) return false;
 
         Cursor note_cursor = getNote(db, 0, noteTitle);
-        if(note_cursor != null && note_cursor.getCount() > 0) return false; //Note of this title already exists
+        if(note_cursor != null && note_cursor.getCount() > 0){
+            note_cursor.close();
+            return false; //Note of this title already exists
+        }
 
         ContentValues values = new ContentValues();
         values.put(NOTETB_TITLE, noteTitle);
@@ -263,9 +283,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         boolean success = db.insert(NOTETBNAME, null, values) != -1;
 
         if(!success) return false; //Can't create note for some reason??
+
         note_cursor = getNote(db, 0, noteTitle);
+        if(note_cursor == null) return false; //Supposed to succeed but getting the note failed?
+
         note_cursor.moveToFirst();
-        int note_id = note_cursor.getInt(note_cursor.getColumnIndex(ID));
+        int note_id = note_cursor.getInt(note_cursor.getColumnIndex(ID)); //Grabbing the id to set up the relations
 
         ArrayList<String> tagsList = new ArrayList<String>(Arrays.asList(tags.split(" ")));
         for(String tag_name : tagsList){
@@ -273,6 +296,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             int tag_id = createTag(db, tag_name);
             insertRelation(db, note_id, tag_id);
         }
+
+        note_cursor.close();
 
         return true;
     }
@@ -346,7 +371,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         }
 
         //Log.i("SEARCH_QUERY", ret.toString());
-        //System.out.println(ret.toString());
+        System.out.println(ret.toString());
 
         return ret.toString();
     }
@@ -397,16 +422,22 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     private String queryBuildTagFilter(List<String> Tag){
         StringBuilder ret = new StringBuilder();
 
-        ret.append(queryBuildTagSubFilter(Tag.get(0)));
+        String mask = queryBuildTagSubFilter();
+
+        ret.append(mask);
+        ret.append(Tag.get(0).replaceAll("'", "''"));
+        ret.append("'))");
 
         for(int i = 1; i < Tag.size(); i++){
             ret.append(" AND ");
-            ret.append(queryBuildTagSubFilter(Tag.get(i)));
+            ret.append(mask);
+            ret.append(Tag.get(i));
+            ret.append("'))");
         }
         return ret.toString();
     }
 
-    private String queryBuildTagSubFilter(String s){
+    private String queryBuildTagSubFilter(){
         StringBuilder ret = new StringBuilder();
         ret.append("EXISTS( SELECT ");
         ret.append(RELTB_NOTE);
@@ -431,8 +462,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         ret.append(" AND t.");
         ret.append(TAGTB_TAG);
         ret.append(" = '");
-        ret.append(s);
-        ret.append("'))");
 
         return ret.toString();
     }
