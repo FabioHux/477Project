@@ -1,5 +1,12 @@
 <resources>
     <string name="app_name">NotesApp</string>
     <string name="plus_sign">+</string>
-    <string name="home_page_title">Notes App</string>`
+    <string name="home_page_title">Notes App</string>
+
+    <string name="title_activity_image_text">ImageTextActivity</string>
+
+    <string name="underlined_title"><b><u>Title</u></b>:</string>
+    <string name="underlined_tags"><b><u>Tags</u></b>:</string>
+    <string name="underlined_Notes"><b><u>Notes</u></b>:</string>
+
 </resources>
