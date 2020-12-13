@@ -89,7 +89,9 @@ public class MainActivity extends AppCompatActivity {
                     notesList.setAdapter(notesAdapter);
                     break;
                 case DB_LOADED:
+                    searchbar.setQuery(gquery, true);
                     (new Thread(new LoadTags(getApplicationContext(), handler))).start();
+                    break;
                 case TAG_LIST_MODIFIED:
                     (new Thread(new LoadNotes(getApplicationContext(), handler, gquery, tagsAdapter.tags))).start();
                     break;
@@ -108,7 +110,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        Log.i("ANDROID_STATE_MESSAGE", "onCreate");
 
 
         //Intent intent = getIntent(); //To apply later
@@ -172,10 +174,6 @@ public class MainActivity extends AppCompatActivity {
                 return false;
             }
         });
-
-        if(savedInstanceState != null){
-            onRestoreInstanceState(savedInstanceState);
-        }
     }
 
     public void makeNewNote(View view){
@@ -281,18 +279,21 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         dbHandler = new DatabaseHandler(this);
+        Log.i("ANDROID_STATE_MESSAGE", "onResume");
         (new Thread(new LoadDB(getApplicationContext(), handler))).start();
         super.onResume();
     }
 
     @Override
     public void onStop() {
+        Log.i("ANDROID_STATE_MESSAGE", "onStop");
         cleanUp();
         super.onStop();
     }
 
     @Override
     public void onPause() {
+        Log.i("ANDROID_STATE_MESSAGE", "onPause");
         onSaveInstanceState(new Bundle());
         cleanUp();
         super.onPause();
@@ -302,6 +303,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         outState.putString(MAIN_SEARCH_SAVE, gquery);
         outState.putStringArrayList(MAIN_TAG_SAVE,(ArrayList<String>) tagsAdapter.tags);
+        Log.i("ANDROID_STATE_MESSAGE", "onSaveInstanceState");
 
         super.onSaveInstanceState(outState);
     }
@@ -309,6 +311,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
+        Log.i("ANDROID_STATE_MESSAGE", "onRestoreInstanceState");
 
         gquery = savedInstanceState.getString(MAIN_SEARCH_SAVE);
         tagsAdapter = new TagsListAdapter(savedInstanceState.getStringArrayList(MAIN_TAG_SAVE), handler, TAG_LIST_MODIFIED);
@@ -317,14 +320,14 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
+        Log.i("ANDROID_STATE_MESSAGE", "onActivityResult");
+        System.out.println("Result = " + (resultCode == Activity.RESULT_OK ? "Activity.RESULT_OK" : "Activity.NOTOK") + "; Request Code: " + requestCode);
         if(requestCode == NOTE_DISPLAY_REQ && resultCode == Activity.RESULT_OK){
             gquery = "";
             tagsAdapter.tags = new ArrayList<>();
             if(data != null){
                 tagsAdapter.addItem(data.getStringExtra(NoteDisplayActivity.NOTE_DISPLAY_TITLE_SLOT));
             }
-            (new Thread(new LoadNotes(getApplicationContext(), handler, gquery, tagsAdapter.tags))).start();
         }
     }
 

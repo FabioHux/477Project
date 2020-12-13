@@ -21,6 +21,7 @@ public class NoteDisplayAdapter extends RecyclerView.Adapter<NoteDisplayViewHold
     ArrayList<ArrayList<TextView>> structure;
     ArrayList<Boolean> done;
     Context context;
+    int counter;
 
     public NoteDisplayAdapter(Context context, ArrayList<ArrayList<TextView>> structure){
         this.context = context;
@@ -29,12 +30,14 @@ public class NoteDisplayAdapter extends RecyclerView.Adapter<NoteDisplayViewHold
         for(int i = 0; i < structure.size(); i++){
             done.add(new Boolean(false));
         }
+        counter = 0;
     }
 
     @NonNull
     @Override
     public NoteDisplayViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LinearLayout view = (LinearLayout) LayoutInflater.from(parent.getContext()).inflate(R.layout.activity_note_display_notes, parent, false);
+        NoteDisplayViewHolder ndvh = new NoteDisplayViewHolder(view);
         //view.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
 
         //System.out.println(view.getMeasuredWidth());
@@ -55,20 +58,38 @@ public class NoteDisplayAdapter extends RecyclerView.Adapter<NoteDisplayViewHold
         }
         num_layers++;
         vhs.add(vh);*/
-        return new NoteDisplayViewHolder(view);
+        Log.i("NOTEDISPLAYER", "Passing through" + counter + " element.");
+        Log.i("NOTEDISPLAYER", "List length: " + getItemCount());
+        ArrayList<TextView> layer = structure.get(counter);
+        if(!done.get(counter).booleanValue()){
+            done.set(counter, new Boolean(true));
+            ndvh.addTV(layer);
+        }
+        if(counter + 1 == structure.size()){
+            counter = -1;
+        }else{
+            counter++;
+        }
+        return ndvh;
     }
 
     @Override
     public void onBindViewHolder(@NonNull NoteDisplayViewHolder holder, int position) {
-        ArrayList<TextView> layer = structure.get(position);
-        if(!done.get(position).booleanValue()){
-            done.set(position, new Boolean(true));
-            holder.addTV(layer);
-        }
+
     }
 
     @Override
     public int getItemCount() {
         return structure.size();
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return position;
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        return position;
     }
 }

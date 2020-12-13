@@ -176,6 +176,18 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
         if(noteCursor == null) return false;
 
+        noteCursor = getNote(db, 0, name);
+
+        //Check if new name is unique
+        if(noteCursor != null && noteCursor.getCount() > 0){
+            noteCursor.moveToFirst();
+            int id = noteCursor.getInt(noteCursor.getColumnIndex(ID));
+            noteCursor.close();
+            noteCursor = null;
+            if(id != note_id) return false; //If the ids don't match that means another note currently has the name
+        };
+
+
         ArrayList<String> newTagsList = new ArrayList<String>(Arrays.asList(NewTags.split(" ")));
         ArrayList<String> oldTagsList = new ArrayList<String>(Arrays.asList(OldTags.split(" ")));
 

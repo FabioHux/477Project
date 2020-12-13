@@ -6,10 +6,12 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="10sp"
+    android:background="@color/grey"
     tools:context=".NoteDisplayActivity">
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="10sp"
         android:background="@color/light_blue">
         <TextView
             android:layout_width="wrap_content"
@@ -38,10 +40,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/TagView"/>
-    <TextView
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_marginTop="10sp"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:textSize = "24sp"
-        android:scrollbars="vertical"
-        android:id="@+id/notes_tv"/>
+        android:layout_height="wrap_content"
+        android:id="@+id/NotesListView"/>
 </LinearLayout>

@@ -2,15 +2,18 @@ package com.gmu.notesapp;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -30,13 +33,16 @@ import java.util.List;
 public class NoteDisplayActivity extends AppCompatActivity {
 
     private String title = null, notes;
-    private List<String> tags, allTags;
+    private List<String> tags, allTags = null;
+    private ArrayList<String> words;
+    private ArrayList<ArrayList<TextView>> noteListStructure;
     private SQLiteDatabase db;
     private DatabaseHandler dbHandler;
     private TextView title_tv, notes_tv;
-    private RecyclerView tagsList;
-    private RecyclerView.LayoutManager tagsLayoutManager;
+    private RecyclerView tagsList, notesList;
+    private RecyclerView.LayoutManager notesLayoutManager, tagsLayoutManager;
     private TagsListAdapter tagsListAdapter;
+    private NoteDisplayAdapter notesListAdapter;
     private int id = 0;
     private String returnSearch = null;
 
@@ -79,12 +85,30 @@ public class NoteDisplayActivity extends AppCompatActivity {
                     cursor.moveToFirst();
                     if(!cursor.isAfterLast()){
                         notes = cursor.getString(cursor.getColumnIndex(DatabaseHandler.NOTETB_NOTE));
+                        words = new ArrayList<>();
                         if(notes != null && !notes.isEmpty()){
-                            notes_tv.setText(notes);
+                            //notes_tv.setText(notes);
+                            String[] swords = notes.split(" ");
+                            for(String s : swords){
+                                int indOf;
+                                while((indOf = s.indexOf('\n')) != -1){
+                                    String left = s.substring(0, indOf);
+                                    if(!left.isEmpty()){
+                                        words.add(left);
+                                    }
+                                    words.add(s.substring(indOf, indOf + 1));
+                                    s = s.substring(indOf+1);
+                                }
+
+                                if(!s.isEmpty()){
+                                    words.add(s);
+                                }
+                            }
                         }
-                        //(new Thread(new CreateStructure(handler, getApplicationContext(), notesList.getMeasuredWidth()))).start();
-                        //notesListAdapter = new NoteDisplayAdapter(getApplicationContext(), words, notesList.getMeasuredWidth());
-                        //notesList.setAdapter(notesListAdapter);
+                        if(words.size() > 0)
+                            (new Thread(new CreateStructure(handler, getApplicationContext(), notesList.getMeasuredWidth()))).start();
+                        /*notesListAdapter = new NoteDisplayAdapter(getApplicationContext(), words);
+                        notesList.setAdapter(notesListAdapter);*/
                         id = cursor.getInt(cursor.getColumnIndex(DatabaseHandler.ID));
                         title = cursor.getString(cursor.getColumnIndex(DatabaseHandler.NOTETB_TITLE));
                         title_tv.setText(title);
@@ -103,10 +127,11 @@ public class NoteDisplayActivity extends AppCompatActivity {
                     tagsList.setAdapter(tagsListAdapter);
                     db.close();
                     break;
-                /*case LAYER_LOADED:
+                case LAYER_LOADED:
                     ArrayList<TextView> layer = (ArrayList<TextView>)msg.obj;
                     //Log.i("LAYER_LOADING", "CHECKPOINT");
                     if(!layer.isEmpty()) {
+                        Log.i("LAYER_LOADING",layer.get(0).getText().toString());
                         noteListStructure.add(layer);
                     }
 
@@ -114,9 +139,10 @@ public class NoteDisplayActivity extends AppCompatActivity {
                         Log.i("LAYER_LOADING", ("size = " + noteListStructure.size()));
                         notesListAdapter = new NoteDisplayAdapter(getApplicationContext(), noteListStructure);
                         notesList.setAdapter(notesListAdapter);
+                        notesList.setLayoutManager(notesLayoutManager);
                     }else{
                         (new Thread(new CreateStructure(handler, getApplicationContext(), notesList.getMeasuredWidth()))).start();
-                    }*/
+                    }
             }
         }
     };
@@ -140,12 +166,11 @@ public class NoteDisplayActivity extends AppCompatActivity {
         tagsList.setLayoutManager(tagsLayoutManager);
         tagsList.setHasFixedSize(true);
 
-        notes_tv = (TextView) findViewById(R.id.notes_tv);
+        //notes_tv = (TextView) findViewById(R.id.notes_tv);
 
-        /*notesLayoutManager = new LinearLayoutManager(this);
+        notesLayoutManager = new LinearLayoutManager(this);
         notesList = (RecyclerView) findViewById(R.id.NotesListView);
-        notesList.setLayoutManager(notesLayoutManager);
-        notesList.setHasFixedSize(true);*/
+        notesList.setHasFixedSize(true);
 
     }
 
@@ -164,7 +189,6 @@ public class NoteDisplayActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
         if(returnSearch != null) {
             Intent intent = new Intent();
             intent.putExtra(NOTE_DISPLAY_TITLE_SLOT, returnSearch);
@@ -179,6 +203,7 @@ public class NoteDisplayActivity extends AppCompatActivity {
     protected void onResume() {
         dbHandler = new DatabaseHandler(this);
         (new Thread(new NoteDisplayActivity.LoadDB(getApplicationContext(), handler))).start();
+        noteListStructure = new ArrayList<>();
         super.onResume();
     }
 
@@ -190,6 +215,9 @@ public class NoteDisplayActivity extends AppCompatActivity {
     @Override
     public void onPause() {
         onSaveInstanceState(new Bundle());
+        title = null;
+        notesList.setAdapter(null);
+        notesListAdapter = null;
         super.onPause();
     }
 
@@ -296,7 +324,7 @@ public class NoteDisplayActivity extends AppCompatActivity {
         }
     }
 
-    /*private class CreateStructure implements Runnable{
+    private class CreateStructure implements Runnable{
         Handler handler;
         Context context;
         int lim;
@@ -307,10 +335,19 @@ public class NoteDisplayActivity extends AppCompatActivity {
             this.lim = lim;
         }
 
+        @SuppressLint("ResourceAsColor")
         @Override
         public void run() {
             ArrayList<TextView> layer = new ArrayList<>();
             //Log.i("LAYER_LOADING", ("lim = " + lim));
+
+            while(allTags == null){
+                try{
+                    Thread.sleep(10);
+                }catch(Exception e){
+
+                }
+            }
 
             int len = 0, i = 0;
             String s = words.get(0);
@@ -347,6 +384,18 @@ public class NoteDisplayActivity extends AppCompatActivity {
                 }
                 len += n;
                 layer.add(t);
+                for(String tags : allTags) {
+                    if (tags.equalsIgnoreCase(s)) {
+                        t.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                callNote(tags);
+                            }
+                        });
+                        t.setTextColor(ContextCompat.getColor(context, R.color.blue));
+                        break;
+                    }
+                }
                 words.remove(0);
                 if(words.isEmpty()) break;
                 s = words.get(0);
@@ -361,24 +410,10 @@ public class NoteDisplayActivity extends AppCompatActivity {
                 indOf = s.indexOf('\n');
             }
 
-            if(len + n < lim && !words.isEmpty() && indOf != -1){
-                if(indOf == 0){
-                    words.remove(0);
-                    if(s.length() > 1)
-                        words.add(0, s.substring(1));
-                }else{
-                    words.remove(0);
-                    String left = s.substring(0, indOf);
-                    if(indOf != s.length() - 1) {
-                        String right = s.substring(indOf + 1);
-                        words.add(0, right);
-                    }
-                    if(len != 0){
-                        int x = layer.size() - 1;
-                        TextView prev = layer.get(x);
-                        prev.setText((prev.getText().toString() + " "));
-                        t.setText(left);
-                    }
+            if(indOf != -1){
+                words.remove(0);
+                if(len == 0){
+                    t.setText(" ");
                     layer.add(t);
                 }
             }
@@ -390,5 +425,5 @@ public class NoteDisplayActivity extends AppCompatActivity {
                     )
             );
         }
-    }*/
+    }
 }
